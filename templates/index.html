@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>TTDE</title>
+    <title>text to decimal encoder and decoder</title>
 
     <style>
         * {
@@ -18,13 +18,23 @@
         }
 
         body {
-            background: #050505;
+            background:
+                linear-gradient(
+                    rgba(0, 0, 0, 0.55),
+                    rgba(0, 0, 0, 0.55)
+                ),
+                url("{{ url_for('static', filename='background.png') }}");
+
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+
             color: #ff7a00;
             font-family: Arial, sans-serif;
             overflow-x: hidden;
         }
 
-        /* Rain background */
+        /* Rain */
         .rain {
             position: fixed;
             inset: 0;
@@ -38,13 +48,13 @@
             top: -100px;
             width: 2px;
             height: 80px;
+
             background: linear-gradient(
                 transparent,
                 #ff7a00
             );
 
-            opacity: 0.7;
-
+            opacity: 0.65;
             animation: fall linear infinite;
         }
 
@@ -58,7 +68,7 @@
             }
         }
 
-        /* Main content */
+        /* Main page */
         .container {
             position: relative;
             z-index: 1;
@@ -67,20 +77,18 @@
             max-width: 900px;
 
             margin: 50px auto;
-
             padding: 30px;
 
-            background: rgba(10, 10, 10, 0.88);
+            background: rgba(5, 5, 5, 0.82);
 
             border: 1px solid #ff7a00;
             border-radius: 15px;
 
             box-shadow:
                 0 0 10px #ff7a00,
-                0 0 30px rgba(255, 122, 0, 0.35);
+                0 0 30px rgba(255, 122, 0, 0.4);
         }
 
-        /* Orange glowing text */
         h1,
         h2,
         p,
@@ -97,25 +105,23 @@
 
         h1 {
             text-align: center;
-            font-size: 48px;
+            font-size: 42px;
+            letter-spacing: 3px;
             margin-top: 0;
-
-            letter-spacing: 6px;
         }
 
-        .logo {
-            display: block;
+        h2 {
+            margin-top: 0;
+        }
 
-            max-width: 220px;
-            max-height: 180px;
+        .block {
+            margin-top: 30px;
+            padding: 25px;
 
-            margin: 0 auto 20px auto;
+            background: rgba(0, 0, 0, 0.45);
 
-            object-fit: contain;
-
-            filter:
-                drop-shadow(0 0 5px #ff7a00)
-                drop-shadow(0 0 15px #ff7a00);
+            border: 1px solid rgba(255, 122, 0, 0.7);
+            border-radius: 12px;
         }
 
         textarea {
@@ -123,10 +129,9 @@
             min-height: 140px;
 
             margin-top: 10px;
-
             padding: 15px;
 
-            background: #080808;
+            background: rgba(0, 0, 0, 0.8);
 
             color: #ff7a00;
 
@@ -138,10 +143,10 @@
             font-size: 16px;
             font-family: monospace;
 
+            resize: vertical;
+
             box-shadow:
                 0 0 8px rgba(255, 122, 0, 0.5);
-
-            resize: vertical;
         }
 
         textarea::placeholder {
@@ -160,7 +165,7 @@
 
             padding: 12px 25px;
 
-            background: #080808;
+            background: rgba(0, 0, 0, 0.8);
 
             border: 1px solid #ff7a00;
             border-radius: 8px;
@@ -180,7 +185,7 @@
 
         button:hover {
             background: #ff7a00;
-            color: #050505;
+            color: black;
 
             text-shadow: none;
 
@@ -190,13 +195,12 @@
         }
 
         .output {
-            margin-top: 25px;
-
+            margin-top: 20px;
             padding: 20px;
 
             min-height: 60px;
 
-            background: #050505;
+            background: rgba(0, 0, 0, 0.85);
 
             border: 1px solid #ff7a00;
             border-radius: 8px;
@@ -212,7 +216,6 @@
                 0 0 10px rgba(255, 122, 0, 0.3);
         }
 
-        /* Small screens */
         @media (max-width: 600px) {
             .container {
                 width: 94%;
@@ -221,11 +224,7 @@
             }
 
             h1 {
-                font-size: 36px;
-            }
-
-            .logo {
-                max-width: 160px;
+                font-size: 30px;
             }
         }
     </style>
@@ -233,58 +232,90 @@
 
 <body>
 
-    <!-- Animated rain -->
+    <!-- Rain -->
     <div class="rain" id="rain"></div>
 
     <div class="container">
 
-        <!-- PNG IMAGE -->
-        <img
-            class="logo"
-            src="{{ url_for('static', filename='ttde.png') }}"
-            alt="TTDE"
-        >
+        <h1>Text to Decimal Encoder and Decoder</h1>
 
-        <h1>TTDE</h1>
+        <!-- ENCODER -->
+        <div class="block">
 
-        <p>Decimal Tone Encoding</p>
+            <h2>Encoder</h2>
 
-        <form method="POST">
+            <p>Convert text into decimal values.</p>
 
-            <label for="text">
-                Input your text:
-            </label>
+            <form method="POST">
 
-            <textarea
-                id="text"
-                name="text"
-                placeholder="input your text here:"
-            ></textarea>
+                <label for="text">
+                    Input your text:
+                </label>
 
-            <button type="submit">
-                ENCODE
-            </button>
+                <textarea
+                    id="text"
+                    name="text"
+                    placeholder="input your text here:"
+                ></textarea>
 
-        </form>
+                <button type="submit">
+                    ENCODE
+                </button>
 
-        {% if encoded %}
-            <div class="output">{{ encoded }}</div>
-        {% endif %}
+            </form>
+
+            {% if encoded %}
+                <div class="output">{{ encoded }}</div>
+            {% endif %}
+
+        </div>
+
+
+        <!-- DECODER -->
+        <div class="block">
+
+            <h2>Decoder</h2>
+
+            <p>Convert decimal values back into text.</p>
+
+            <form method="POST">
+
+                <label for="decode">
+                    Input your decimal code:
+                </label>
+
+                <textarea
+                    id="decode"
+                    name="decode"
+                    placeholder='Example: "2.224" "1.391" "6.390"'
+                ></textarea>
+
+                <button type="submit">
+                    DECODE
+                </button>
+
+            </form>
+
+            {% if decoded %}
+                <div class="output">{{ decoded }}</div>
+            {% endif %}
+
+        </div>
 
     </div>
+
 
     <script>
         const rain = document.getElementById("rain");
 
-        const numberOfDrops = 100;
-
-        for (let i = 0; i < numberOfDrops; i++) {
+        for (let i = 0; i < 100; i++) {
 
             const drop = document.createElement("div");
 
             drop.classList.add("drop");
 
-            drop.style.left = Math.random() * 100 + "%";
+            drop.style.left =
+                Math.random() * 100 + "%";
 
             drop.style.height =
                 (40 + Math.random() * 100) + "px";
