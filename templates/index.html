@@ -1,76 +1,303 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DTE Encoder</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TTDE</title>
 
     <style>
-        body {
-            background: #111318;
-            color: white;
-            font-family: Arial, sans-serif;
-            padding: 40px;
+        * {
+            box-sizing: border-box;
         }
 
-        .box {
-            max-width: 800px;
-            margin: auto;
-            background: #1b1e25;
-            padding: 25px;
-            border-radius: 12px;
+        html, body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+
+        body {
+            background: #050505;
+            color: #ff7a00;
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Rain background */
+        .rain {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .drop {
+            position: absolute;
+            top: -100px;
+            width: 2px;
+            height: 80px;
+            background: linear-gradient(
+                transparent,
+                #ff7a00
+            );
+
+            opacity: 0.7;
+
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            from {
+                transform: translateY(-120px);
+            }
+
+            to {
+                transform: translateY(110vh);
+            }
+        }
+
+        /* Main content */
+        .container {
+            position: relative;
+            z-index: 1;
+
+            width: 90%;
+            max-width: 900px;
+
+            margin: 50px auto;
+
+            padding: 30px;
+
+            background: rgba(10, 10, 10, 0.88);
+
+            border: 1px solid #ff7a00;
+            border-radius: 15px;
+
+            box-shadow:
+                0 0 10px #ff7a00,
+                0 0 30px rgba(255, 122, 0, 0.35);
+        }
+
+        /* Orange glowing text */
+        h1,
+        h2,
+        p,
+        label,
+        button,
+        .output {
+            color: #ff7a00;
+
+            text-shadow:
+                0 0 5px #ff7a00,
+                0 0 10px #ff7a00,
+                0 0 20px rgba(255, 122, 0, 0.8);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 48px;
+            margin-top: 0;
+
+            letter-spacing: 6px;
+        }
+
+        .logo {
+            display: block;
+
+            max-width: 220px;
+            max-height: 180px;
+
+            margin: 0 auto 20px auto;
+
+            object-fit: contain;
+
+            filter:
+                drop-shadow(0 0 5px #ff7a00)
+                drop-shadow(0 0 15px #ff7a00);
         }
 
         textarea {
             width: 100%;
-            height: 120px;
-            box-sizing: border-box;
-            padding: 12px;
+            min-height: 140px;
+
+            margin-top: 10px;
+
+            padding: 15px;
+
+            background: #080808;
+
+            color: #ff7a00;
+
+            border: 1px solid #ff7a00;
+            border-radius: 8px;
+
+            outline: none;
+
             font-size: 16px;
+            font-family: monospace;
+
+            box-shadow:
+                0 0 8px rgba(255, 122, 0, 0.5);
+
             resize: vertical;
         }
 
+        textarea::placeholder {
+            color: #ff7a00;
+            opacity: 0.6;
+        }
+
+        textarea:focus {
+            box-shadow:
+                0 0 8px #ff7a00,
+                0 0 20px rgba(255, 122, 0, 0.5);
+        }
+
         button {
-            margin-top: 12px;
-            padding: 10px 20px;
+            margin-top: 15px;
+
+            padding: 12px 25px;
+
+            background: #080808;
+
+            border: 1px solid #ff7a00;
+            border-radius: 8px;
+
+            color: #ff7a00;
+
             font-size: 16px;
+            font-weight: bold;
+
             cursor: pointer;
+
+            box-shadow:
+                0 0 8px rgba(255, 122, 0, 0.5);
+
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #ff7a00;
+            color: #050505;
+
+            text-shadow: none;
+
+            box-shadow:
+                0 0 10px #ff7a00,
+                0 0 30px #ff7a00;
         }
 
         .output {
-            margin-top: 20px;
-            padding: 15px;
-            background: #0d0f13;
+            margin-top: 25px;
+
+            padding: 20px;
+
+            min-height: 60px;
+
+            background: #050505;
+
+            border: 1px solid #ff7a00;
             border-radius: 8px;
-            word-break: break-word;
+
+            font-family: monospace;
+            font-size: 16px;
+
             white-space: pre-wrap;
+            word-break: break-word;
+
+            box-shadow:
+                inset 0 0 10px rgba(255, 122, 0, 0.2),
+                0 0 10px rgba(255, 122, 0, 0.3);
+        }
+
+        /* Small screens */
+        @media (max-width: 600px) {
+            .container {
+                width: 94%;
+                padding: 20px;
+                margin: 25px auto;
+            }
+
+            h1 {
+                font-size: 36px;
+            }
+
+            .logo {
+                max-width: 160px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<div class="box">
+    <!-- Animated rain -->
+    <div class="rain" id="rain"></div>
 
-    <h1>DTE Encoder</h1>
+    <div class="container">
 
-    <form method="POST">
+        <!-- PNG IMAGE -->
+        <img
+            class="logo"
+            src="{{ url_for('static', filename='ttde.png') }}"
+            alt="TTDE"
+        >
 
-        <textarea
-            name="text"
-            placeholder="input your text here:"
-        ></textarea>
+        <h1>TTDE</h1>
 
-        <br>
+        <p>Decimal Tone Encoding</p>
 
-        <button type="submit">Encode</button>
+        <form method="POST">
 
-    </form>
+            <label for="text">
+                Input your text:
+            </label>
 
-    {% if encoded %}
-        <div class="output">{{ encoded }}</div>
-    {% endif %}
+            <textarea
+                id="text"
+                name="text"
+                placeholder="input your text here:"
+            ></textarea>
 
-</div>
+            <button type="submit">
+                ENCODE
+            </button>
+
+        </form>
+
+        {% if encoded %}
+            <div class="output">{{ encoded }}</div>
+        {% endif %}
+
+    </div>
+
+    <script>
+        const rain = document.getElementById("rain");
+
+        const numberOfDrops = 100;
+
+        for (let i = 0; i < numberOfDrops; i++) {
+
+            const drop = document.createElement("div");
+
+            drop.classList.add("drop");
+
+            drop.style.left = Math.random() * 100 + "%";
+
+            drop.style.height =
+                (40 + Math.random() * 100) + "px";
+
+            drop.style.animationDuration =
+                (0.5 + Math.random() * 1.5) + "s";
+
+            drop.style.animationDelay =
+                Math.random() * 2 + "s";
+
+            rain.appendChild(drop);
+        }
+    </script>
 
 </body>
 </html>
